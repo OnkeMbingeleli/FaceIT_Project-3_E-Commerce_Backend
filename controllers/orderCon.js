@@ -1,28 +1,47 @@
-import {postorderDb} from '../models/orderDb.js'
+import { postorderDb, patchorderDb, deleteorderDb } from "../models/orderDb.js";
 
-export const postorderCon = async (req,res) => {
+export const postorderCon = async (req, res) => {
+  try {
+    const { sub_id, amount, order_status } = req.body;
 
-    try {
-        const {sub_id,amount,order_status} = req.body;
-        
-        const data = await postorderDb({
-            sub_id,
-            amount,
-            order_status
-        });
+    const data = await postorderDb({
+      sub_id,
+      amount,
+      order_status
+    });
 
-        res.json({ message: "Order created!!", data});
-
-    } catch (err) {
-        res.status (500).json({ error: err.message});
-    }
+    res.status(201).json({ message: "Order created", data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
-//     export const postorderCon = async (req, res) => {
-//     console.log("REQ BODY:", req.body);
-//     res.json({ received: req.body });
-// };
 
+export const patchorderCon = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await patchorderDb(id, req.body);
 
-// export {
-//     postorderCon
-// }
+    if (!data.affectedRows) {
+      return res.status(404).json({ error: "Order not found or no fields to update" });
+    }
+
+    res.json({ message: "Order updated", data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const deleteorderCon = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await deleteorderDb(id);
+
+    if (!data.affectedRows) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    res.json({ message: "Order deleted", data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

@@ -1,8 +1,14 @@
-import express from 'express';
-import { postsubscriptionCon } from '../controllers/subscriptionCon.js';
+import express from "express";
+import {
+  postsubscriptionCon,
+  patchsubscriptionCon,
+  deletesubscriptionCon
+} from "../controllers/subscriptionCon.js";
 
 const router = express.Router();
 
-router.post ('/subscription', postsubscriptionCon);
+router.post("/subscription", postsubscriptionCon);
+router.patch("/subscription/:id", patchsubscriptionCon);
+router.delete("/subscription/:id", deletesubscriptionCon);
 
 export default router;
