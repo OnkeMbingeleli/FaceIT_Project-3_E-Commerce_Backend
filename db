@@ -1,0 +1,94 @@
+CREATE DATABASE IF NOT EXISTS B2C_future_B2B_PartnersStaff;
+USE B2C_future_B2B_PartnersStaff;
+
+SET NAMES utf8mb4;
+SET time_zone = '+00:00';
+
+-- USERS (matches Backend/models/usersDb.js)
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(160) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  address VARCHAR(255) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- PACKAGES (matches Backend/models/packagesDb.js)
+CREATE TABLE IF NOT EXISTS weekly_packages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  package_name VARCHAR(120) NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  duration VARCHAR(80) NULL,
+  description TEXT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- SUBSCRIPTIONS (matches Backend/models/subscriptionDb.js)
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  package_id INT NOT NULL,
+  start_date DATE NOT NULL,
+  status VARCHAR(30) NOT NULL DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_sub_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_sub_package FOREIGN KEY (package_id) REFERENCES weekly_packages(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ORDERS (matches Backend/models/orderDb.js)
+CREATE TABLE IF NOT EXISTS orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  sub_id INT NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  order_status VARCHAR(30) NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_order_sub FOREIGN KEY (sub_id) REFERENCES subscriptions(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- PAYMENTS (matches Backend/models/paymentsDb.js)
+CREATE TABLE IF NOT EXISTS payments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  pay_method VARCHAR(30) NOT NULL,
+  pay_date DATETIME NULL,
+  pay_status VARCHAR(30) NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_payment_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- CARTS + CART ITEMS (matches Backend/models/cartDb.js)
+CREATE TABLE IF NOT EXISTS carts (
+  id CHAR(36) PRIMARY KEY,
+  user_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_cart_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS cart_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  cart_id CHAR(36) NOT NULL,
+  product_id INT NOT NULL,
+  quantity INT NOT NULL DEFAULT 1,
+  added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_cart_items_cart FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Minimal seed for login + basic flow testing
+INSERT INTO users (id, name, email, password, address)
+VALUES
+  (1, 'Test User', 'testuser@mail.com', '123456', 'Johannesburg')
+ON DUPLICATE KEY UPDATE
+  name = VALUES(name),
+  password = VALUES(password),
+  address = VALUES(address);
+
+INSERT INTO weekly_packages (id, package_name, price, duration, description)
+VALUES
+  (1, 'Starter Skin Plan', 199.99, '4 weeks', 'Basic skincare starter package')
+ON DUPLICATE KEY UPDATE
+  package_name = VALUES(package_name),
+  price = VALUES(price),
+  duration = VALUES(duration),
+  description = VALUES(description);
