@@ -115,15 +115,7 @@
           <div class="product-card" v-for="product in ownProducts" :key="product.name">
             <div class="product-visual">
               <div class="product-glow"></div>
-              <svg viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="35" y="30" width="50" height="100" rx="10" fill="rgba(0,85,255,0.07)" stroke="rgba(0,170,255,0.25)" stroke-width="1.2"/>
-                <rect x="45" y="18" width="30" height="18" rx="6" fill="rgba(0,85,255,0.1)" stroke="rgba(0,170,255,0.2)" stroke-width="1"/>
-                <rect x="43" y="55" width="34" height="5" rx="2.5" fill="rgba(0,170,255,0.35)"/>
-                <rect x="46" y="66" width="28" height="3" rx="1.5" fill="rgba(0,170,255,0.2)"/>
-                <rect x="48" y="74" width="24" height="3" rx="1.5" fill="rgba(0,170,255,0.15)"/>
-                <circle cx="60" cy="100" r="12" fill="none" stroke="rgba(0,85,255,0.3)" stroke-width="1"/>
-                <text x="60" y="104" text-anchor="middle" font-size="8" fill="rgba(0,170,255,0.7)" font-family="monospace" font-weight="bold">FI</text>
-              </svg>
+              <img :src="product.image" :alt="product.name" class="product-img" loading="lazy" />
             </div>
             <div class="product-body">
               <div class="product-type-badge">{{ product.type }}</div>
@@ -154,6 +146,20 @@
 <script setup>
 import AppNavbar from '@/components/AppNavbar.vue'
 import AppFooter from '@/components/AppFooter.vue'
+import deliveryEssenceImg from '@/assets/products/skincare products/Delivery Essence.jpg'
+import garnierPureActiveImg from '@/assets/products/skincare products/Garnier Pure active.jpg'
+import glycolicAcidImg from '@/assets/products/skincare products/Glycolic Acid.jpg'
+import lacticAcidImg from '@/assets/products/skincare products/Lactic Acid.jpg'
+import niacinamideImg from '@/assets/products/skincare products/Niacinmaide.jpg'
+import niveaDermaDryImg from '@/assets/products/skincare products/Nivea derma dry control.jpg'
+import retinolBoostDayCreamImg from '@/assets/products/skincare products/renitol boost day cream.jpg'
+import repairBodyLotionImg from '@/assets/products/skincare products/repair body lotion.jpg'
+import retinolSerumImg from '@/assets/products/skincare products/retinol.jpg'
+import spotControllingWashImg from '@/assets/products/skincare products/Spot controling wash.jpg'
+import niveaCellularSetImg from '@/assets/products/skincare products/The Cellular Filler Set Nivea.jpg'
+import niveaLuminous630Img from '@/assets/products/skincare products/The Nivea Cellular Luminous 630 Antispot Serum.jpg'
+import brightBoostSerumImg from '@/assets/products/skincare products/Boost illuminating serum.jpg'
+import brightBoostPolishImg from '@/assets/products/skincare products/Bright Boost resurfacing.jpg'
 
 const brands = [
   {
@@ -162,7 +168,7 @@ const brands = [
     colorClass: 'ordinary',
     featured: false,
     tagline: 'Clinical formulations with integrity.',
-    desc: 'Known for its no-nonsense, science-first approach to skincare. Face.IT integrates their targeted actives — retinols, acids, peptides — directly into your AI-generated routine.',
+    desc: 'Known for its no-nonsense, science-first approach to skincare. Face.IT integrates their targeted actives into your AI-generated routine.',
     tags: ['Serums', 'Actives', 'Retinoids', 'Peeling Solutions'],
   },
   {
@@ -171,8 +177,8 @@ const brands = [
     colorClass: 'nivea',
     featured: true,
     tagline: 'Trusted skincare for over 100 years.',
-    desc: 'One of the world\'s most recognised skincare brands. Through our partnership, Face.IT users get access to Nivea\'s full hydration and protection range, recommended precisely to your moisture profile.',
-    tags: ['Moisturisers', 'SPF', 'Body Care', 'Men\'s Range'],
+    desc: 'Face.IT users get access to Nivea hydration and protection lines, matched to scan outcomes.',
+    tags: ['Moisturisers', 'SPF', 'Body Care', 'Anti-Spot'],
   },
   {
     name: 'Neutrogena',
@@ -180,8 +186,8 @@ const brands = [
     colorClass: 'neutrogena',
     featured: false,
     tagline: 'Dermatologist recommended skincare.',
-    desc: 'Clinically proven formulas trusted by dermatologists worldwide. Neutrogena\'s acne, hydration, and sun care lines are matched by our scanner to users who need them most.',
-    tags: ['Acne Care', 'Hydration', 'Sun Care', 'Cleansers'],
+    desc: 'Clinically proven formulas for acne, hydration and brightening, selected by scan profile.',
+    tags: ['Acne Care', 'Hydration', 'Brightening', 'Cleansers'],
   },
 ]
 
@@ -192,7 +198,7 @@ const scanners = [
     tierClass: 'tier-lite',
     glowClass: 'glow-lite',
     price: 'R 1,499',
-    desc: 'The perfect entry point. Compact home-use scanner with full hydration, oil balance, and skin type analysis.',
+    desc: 'The perfect entry point. Compact home-use scanner with hydration, oil balance, and skin type analysis.',
     specs: ['Hydration mapping', 'Oil zone detection', 'Skin type classification', 'App sync via Bluetooth'],
   },
   {
@@ -201,8 +207,8 @@ const scanners = [
     tierClass: 'tier-pro',
     glowClass: 'glow-pro',
     price: 'R 3,299',
-    desc: 'Our flagship device. UV damage detection, aging analysis, and full personalised routine builder — all in one scan.',
-    specs: ['All Lite features', 'UV & aging detection', 'Tone & texture analysis', 'Routine builder AI', 'Cloud skin history'],
+    desc: 'Our flagship device with UV damage detection, aging analysis, and full routine builder.',
+    specs: ['All Lite features', 'UV and aging detection', 'Tone and texture analysis', 'Routine builder AI', 'Cloud skin history'],
   },
   {
     name: 'Face.IT Clinic',
@@ -210,19 +216,26 @@ const scanners = [
     tierClass: 'tier-clinic',
     glowClass: 'glow-clinic',
     price: 'Contact Us',
-    desc: 'Built for dermatologists and beauty professionals. Multi-client profiles, clinical-grade reporting, and practice dashboard.',
+    desc: 'Built for dermatologists and beauty professionals with multi-client profiles and reports.',
     specs: ['All Pro features', 'Multi-client profiles', 'Clinical PDF reports', 'Practice dashboard', 'Priority API access'],
   },
 ]
 
 const ownProducts = [
-  { name: 'FI Daily Moisturiser', type: 'Moisturiser', desc: 'Lightweight, non-comedogenic daily hydration formulated for all skin types identified by Face.IT scans.', skins: ['All skin types'] },
-  { name: 'FI Peptide Serum', type: 'Serum', desc: 'High-potency peptide complex targeting fine lines and loss of firmness. Matched to mature or stressed skin profiles.', skins: ['Mature', 'Dry', 'Combination'] },
-  { name: 'FI SPF 50 Shield', type: 'Sunscreen / SPF', desc: 'Broad-spectrum mineral SPF 50. Invisible finish, no white cast. Ideal for all UV-exposed profiles.', skins: ['All skin types'] },
-  { name: 'FI Gentle Cleanser', type: 'Cleanser', desc: 'pH-balanced gel cleanser that removes impurities without stripping the skin barrier.', skins: ['Sensitive', 'Oily', 'Normal'] },
-  { name: 'FI Balancing Toner', type: 'Toner', desc: 'Alcohol-free toner with niacinamide and witch hazel. Tightens pores and preps skin for serums.', skins: ['Oily', 'Combination'] },
-  { name: 'FI Brightening Eye Cream', type: 'Eye Cream', desc: 'Caffeine and vitamin K complex targeting dark circles and puffiness detected in periorbital scan zones.', skins: ['All skin types'] },
-  { name: 'FI Hydra-Repair Mask', type: 'Face Mask', desc: 'Weekly intensive sheet mask delivering 72-hour hydration. Recommended for dehydrated skin profiles.', skins: ['Dry', 'Dehydrated'] },
+  { name: 'The Ordinary Multi-Active Delivery Essence', type: 'Essence', image: deliveryEssenceImg, desc: 'Hydrating essence to support product absorption and moisture prep.', skins: ['Dehydrated', 'Dull'] },
+  { name: 'Garnier SkinActive Pure Active 3-in-1', type: 'Cleanser/Scrub/Mask', image: garnierPureActiveImg, desc: 'Salicylic acid formula for oil control and breakout support.', skins: ['Oily', 'Acne-Prone'] },
+  { name: 'The Ordinary Glycolic Acid 7%', type: 'AHA Toner', image: glycolicAcidImg, desc: 'Resurfacing toner for uneven texture and dull skin.', skins: ['Textured', 'Dull'] },
+  { name: 'The Ordinary Lactic Acid 10% + HA', type: 'AHA Serum', image: lacticAcidImg, desc: 'Gentler chemical exfoliation with hydration support.', skins: ['Dry', 'Sensitive'] },
+  { name: 'The Ordinary Niacinamide 5% Emulsion', type: 'Treatment', image: niacinamideImg, desc: 'Supports tone correction and barrier balance.', skins: ['Combination', 'Uneven Tone'] },
+  { name: 'Nivea Derma Dry Control', type: 'Protection', image: niveaDermaDryImg, desc: 'Dermatological sweat and odour protection support.', skins: ['All skin types'] },
+  { name: 'Neutrogena Retinol Boost Day Cream SPF 15', type: 'Day Cream', image: retinolBoostDayCreamImg, desc: 'Retinol day cream with light UV support.', skins: ['Mature', 'Normal'] },
+  { name: 'Neutrogena Intense Repair CICA Body Lotion', type: 'Body Lotion', image: repairBodyLotionImg, desc: 'Repair-focused hydration for very dry rough skin.', skins: ['Dry', 'Barrier Damage'] },
+  { name: 'The Ordinary Retinol 1% in Squalane', type: 'Retinol Serum', image: retinolSerumImg, desc: 'Night treatment for lines, texture and tone.', skins: ['Mature', 'Textured'] },
+  { name: 'Neutrogena Spot Controlling+ Face Wash', type: 'Face Wash', image: spotControllingWashImg, desc: 'Salicylic acid plus PHA cleanser for clearer pores.', skins: ['Oily', 'Acne-Prone'] },
+  { name: 'Nivea Cellular Filler Set', type: 'Set', image: niveaCellularSetImg, desc: 'Targeted anti-aging combination set.', skins: ['Mature'] },
+  { name: 'Nivea Cellular Luminous 630 Anti-Spot Serum', type: 'Dark Spot Serum', image: niveaLuminous630Img, desc: 'Targets dark spots and uneven pigmentation.', skins: ['Hyperpigmentation'] },
+  { name: 'Neutrogena Bright Boost Illuminating Serum', type: 'Brightening Serum', image: brightBoostSerumImg, desc: 'Improves radiance and renewal for dull skin.', skins: ['Dull', 'Uneven Tone'] },
+  { name: 'Neutrogena Bright Boost Resurfacing Polish', type: 'Exfoliating Polish', image: brightBoostPolishImg, desc: 'AHA plus natural exfoliators for smoother texture.', skins: ['Textured', 'Dull'] },
 ]
 </script>
 
@@ -423,7 +436,7 @@ const ownProducts = [
   position: absolute; inset: 0;
   background: radial-gradient(circle at 50% 60%, rgba(0,85,255,0.1) 0%, transparent 70%);
 }
-.product-visual svg { position: relative; z-index: 1; width: 100px; height: 130px; }
+.product-img { position: relative; z-index: 1; width: 78px; height: 116px; object-fit: contain; }
 
 .product-body { padding: 18px 18px 22px; }
 .product-type-badge {
@@ -472,3 +485,7 @@ const ownProducts = [
 }
 @media (max-width: 560px) { .products-grid { grid-template-columns: 1fr; } }
 </style>
+
+
+
+
