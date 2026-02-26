@@ -1,20 +1,25 @@
 import pool from "../pool.js";
 
-export const postusersDb = async ({ name, email, password, address }) => {
+export const postusersDb = async ({ full_name, email, password_hash, phone }) => {
   const [result] = await pool.query(
-    "INSERT INTO users (name, email, password, address) VALUES (?, ?, ?, ?)",
-    [name, email, password, address]
+    "INSERT INTO users (full_name, email, password_hash, phone) VALUES (?, ?, ?, ?)",
+    [full_name, email, password_hash, phone || null]
   );
   return result;
 };
 
 export const getusersDb = async () => {
-  const [rows] = await pool.query("SELECT id, name, email, address, created_at FROM users ORDER BY id DESC");
+  const [rows] = await pool.query(
+    "SELECT id, full_name, email, role, phone, is_verified, created_at, updated_at FROM users ORDER BY id DESC"
+  );
   return rows;
 };
 
 export const getuserByIdDb = async (id) => {
-  const [rows] = await pool.query("SELECT id, name, email, address, created_at FROM users WHERE id = ?", [id]);
+  const [rows] = await pool.query(
+    "SELECT id, full_name, email, role, phone, is_verified, created_at, updated_at FROM users WHERE id = ?",
+    [id]
+  );
   return rows[0] || null;
 };
 
@@ -22,7 +27,7 @@ export const patchusersDb = async (id, payload) => {
   const fields = [];
   const values = [];
 
-  ["name", "email", "password", "address"].forEach((key) => {
+  ["full_name", "email", "password_hash", "phone", "role", "is_verified"].forEach((key) => {
     if (payload[key] !== undefined) {
       fields.push(`${key} = ?`);
       values.push(payload[key]);
@@ -43,7 +48,7 @@ export const deleteusersDb = async (id) => {
 
 export const getUserByEmailDb = async (email) => {
   const [rows] = await pool.query(
-    "SELECT id, name, email, password, address FROM users WHERE email = ? LIMIT 1",
+    "SELECT id, full_name, email, password_hash, role, phone, is_verified FROM users WHERE email = ? LIMIT 1",
     [email]
   );
   return rows[0] || null;
