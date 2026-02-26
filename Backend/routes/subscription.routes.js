@@ -6,13 +6,14 @@ import {
   patchsubscriptionCon,
   deletesubscriptionCon
 } from "../controllers/subscriptionCon.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/subscription", postsubscriptionCon);
-router.get("/subscription", getsubscriptionsCon);
-router.get("/subscription/:id", getsubscriptionByIdCon);
-router.patch("/subscription/:id", patchsubscriptionCon);
-router.delete("/subscription/:id", deletesubscriptionCon);
+router.post("/subscription", verifyToken, postsubscriptionCon);
+router.get("/subscription", verifyToken, getsubscriptionsCon);
+router.get("/subscription/:id", verifyToken, getsubscriptionByIdCon);
+router.patch("/subscription/:id", verifyToken, patchsubscriptionCon);
+router.delete("/subscription/:id", verifyToken, deletesubscriptionCon);
 
 export default router;
