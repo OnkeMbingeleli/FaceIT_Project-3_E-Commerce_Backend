@@ -1,9 +1,9 @@
 import pool from "../pool.js";
 
-export const postusersDb = async ({ full_name, email, password_hash, phone }) => {
+export const postusersDb = async ({ full_name, email, password, phone }) => {
   const [result] = await pool.query(
-    "INSERT INTO users (full_name, email, password_hash, phone) VALUES (?, ?, ?, ?)",
-    [full_name, email, password_hash, phone || null]
+    "INSERT INTO users (full_name, email, password, phone) VALUES (?, ?, ?, ?)",
+    [full_name, email, password, phone || null]
   );
   return result;
 };
@@ -27,7 +27,7 @@ export const patchusersDb = async (id, payload) => {
   const fields = [];
   const values = [];
 
-  ["full_name", "email", "password_hash", "phone", "role", "is_verified"].forEach((key) => {
+  ["full_name", "email", "password", "phone", "role", "is_verified"].forEach((key) => {
     if (payload[key] !== undefined) {
       fields.push(`${key} = ?`);
       values.push(payload[key]);
@@ -48,7 +48,7 @@ export const deleteusersDb = async (id) => {
 
 export const getUserByEmailDb = async (email) => {
   const [rows] = await pool.query(
-    "SELECT id, full_name, email, password_hash, role, phone, is_verified FROM users WHERE email = ? LIMIT 1",
+    "SELECT id, full_name, email, password, role, phone, is_verified FROM users WHERE email = ? LIMIT 1",
     [email]
   );
   return rows[0] || null;

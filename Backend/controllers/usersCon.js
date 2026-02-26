@@ -21,8 +21,8 @@ export const postusersCon = async (req, res) => {
       return res.status(400).json({ message: "full_name, email and password are required" });
     }
 
-    const password_hash = await bcrypt.hash(password, 10);
-    const data = await postusersDb({ full_name, email, password_hash, phone });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const data = await postusersDb({ full_name, email, password: hashedPassword, phone });
     res.status(201).json({ message: "User created", data });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -61,7 +61,7 @@ export const loginusersCon = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password_hash);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -93,8 +93,7 @@ export const patchusersCon = async (req, res) => {
     const payload = { ...req.body };
 
     if (payload.password) {
-      payload.password_hash = await bcrypt.hash(payload.password, 10);
-      delete payload.password;
+      payload.password = await bcrypt.hash(payload.password, 10);
     }
     if (payload.name && !payload.full_name) payload.full_name = payload.name;
     delete payload.name;
